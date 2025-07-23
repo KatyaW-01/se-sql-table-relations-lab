@@ -76,7 +76,14 @@ ORDER BY c.contactLastName ASC
 
 # STEP 5
 # Replace None with your code
-df_payment = None
+df_payment = pd.read_sql("""
+SELECT customers.contactFirstName, customers.contactLastName, CAST(payments.amount AS FLOAT) as amount, payments.paymentDate
+FROM customers
+  JOIN payments
+  USING(customerNumber)
+ORDER BY amount DESC
+ """,conn)
+print(df_payment)
 
 # STEP 6
 # Replace None with your code
