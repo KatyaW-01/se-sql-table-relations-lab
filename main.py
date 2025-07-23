@@ -11,9 +11,9 @@ table = pd.read_sql("""SELECT * FROM sqlite_master""", conn)
 #print(table)
 
 employee_table = pd.read_sql("""SELECT * FROM employees""",conn)
-#print(employee_table)
+print(employee_table)
 offices = pd.read_sql("""SELECT * FROM offices """,conn)
-print(offices.info(verbose=True))
+#print(offices.info(verbose=True))
 
 orders = pd.read_sql("""SELECT * FROM orders """,conn)
 #print(orders['orderNumber'].isna().unique())
@@ -25,7 +25,7 @@ order_details = pd.read_sql("""SELECT * FROM orderdetails""",conn)
 #print(order_details)
 
 customers = pd.read_sql("""SELECT * FROM customers""",conn)
-print(customers.columns)
+print(customers)
 #print(offices.columns)
 # STEP 1
 # Replace None with your code
@@ -83,11 +83,19 @@ FROM customers
   USING(customerNumber)
 ORDER BY amount DESC
  """,conn)
-print(df_payment)
 
 # STEP 6
 # Replace None with your code
-df_credit = None
+df_credit = pd.read_sql(""" 
+SELECT e.employeeNumber, e.firstName, e.lastName, COUNT(customers.customerNumber) AS num_customers
+FROM employees AS e
+  JOIN customers 
+  ON e.employeeNumber = customers.salesRepEmployeeNumber
+GROUP BY e.employeeNumber
+HAVING AVG(customers.creditLimit) > 90000.00
+ORDER BY num_customers DESC
+""",conn)
+print(df_credit)
 
 # STEP 7
 # Replace None with your code
