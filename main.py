@@ -7,23 +7,72 @@ import pandas as pd
 # Connect to the database
 conn = sqlite3.connect('data.sqlite')
 
-pd.read_sql("""SELECT * FROM sqlite_master""", conn)
+table = pd.read_sql("""SELECT * FROM sqlite_master""", conn)
+#print(table)
 
+employee_table = pd.read_sql("""SELECT * FROM employees""",conn)
+#print(employee_table)
+offices = pd.read_sql("""SELECT * FROM offices """,conn)
+print(offices.info(verbose=True))
+
+orders = pd.read_sql("""SELECT * FROM orders """,conn)
+#print(orders['orderNumber'].isna().unique())
+#print(orders['status'].unique())
+#print(orders.columns)
+#print(orders['status'].unique())
+
+order_details = pd.read_sql("""SELECT * FROM orderdetails""",conn)
+#print(order_details)
+
+customers = pd.read_sql("""SELECT * FROM customers""",conn)
+print(customers.columns)
+#print(offices.columns)
 # STEP 1
 # Replace None with your code
-df_boston = None
+df_boston = pd.read_sql("""
+SELECT firstName, jobTitle
+FROM employees
+JOIN offices
+    ON employees.officeCode = offices.officeCode
+  WHERE offices.city = "Boston"
+ """,conn)
+
 
 # STEP 2
 # Replace None with your code
-df_zero_emp = None
+df_zero_emp = pd.read_sql("""
+SELECT offices.officeCode, COUNT(employees.employeeNumber) AS number_employees
+FROM offices
+  LEFT JOIN employees 
+  USING(officeCode)
+GROUP BY officeCode
+HAVING number_employees = 0
+""",conn)
+
 
 # STEP 3
 # Replace None with your code
-df_employee = None
+df_employee = pd.read_sql("""
+SELECT employees.firstName, employees.lastName, offices.city, offices.state
+FROM employees
+    LEFT JOIN offices
+    USING(officeCode)   
+ORDER BY employees.firstName, employees.lastname ASC               
+""",conn)
+
 
 # STEP 4
 # Replace None with your code
-df_contacts = None
+df_contacts = pd.read_sql("""
+SELECT c.contactFirstName, c.contactLastName, c.phone, c.salesRepEmployeeNumber
+FROM customers AS c
+  LEFT JOIN orders
+  USING(customerNumber)
+WHERE orders.customerNumber IS NULL
+ORDER BY c.contactLastName ASC
+ """,conn)
+
+#print(df_contacts)
 
 # STEP 5
 # Replace None with your code
