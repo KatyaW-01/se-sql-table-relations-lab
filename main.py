@@ -11,7 +11,7 @@ table = pd.read_sql("""SELECT * FROM sqlite_master""", conn)
 #print(table)
 
 employee_table = pd.read_sql("""SELECT * FROM employees""",conn)
-print(employee_table)
+#print(employee_table)
 offices = pd.read_sql("""SELECT * FROM offices """,conn)
 #print(offices.info(verbose=True))
 
@@ -21,11 +21,13 @@ orders = pd.read_sql("""SELECT * FROM orders """,conn)
 #print(orders.columns)
 #print(orders['status'].unique())
 
+products = pd.read_sql("""SELECT * FROM products""",conn)
+print(products.columns)
 order_details = pd.read_sql("""SELECT * FROM orderdetails""",conn)
-#print(order_details)
+print(order_details.columns)
 
 customers = pd.read_sql("""SELECT * FROM customers""",conn)
-print(customers)
+
 #print(offices.columns)
 # STEP 1
 # Replace None with your code
@@ -95,11 +97,20 @@ GROUP BY e.employeeNumber
 HAVING AVG(customers.creditLimit) > 90000.00
 ORDER BY num_customers DESC
 """,conn)
-print(df_credit)
 
 # STEP 7
 # Replace None with your code
-df_product_sold = None
+
+df_product_sold = pd.read_sql("""
+SELECT p.productName, COUNT(o.orderNumber) AS numorders, SUM(quantityOrdered) AS totalunits
+FROM products AS p
+  JOIN orderdetails AS o
+   USING(productCode)
+GROUP BY p.productName
+ORDER BY totalunits DESC
+""",conn)
+
+print(df_product_sold)
 
 # STEP 8
 # Replace None with your code
