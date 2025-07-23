@@ -18,13 +18,14 @@ offices = pd.read_sql("""SELECT * FROM offices """,conn)
 orders = pd.read_sql("""SELECT * FROM orders """,conn)
 #print(orders['orderNumber'].isna().unique())
 #print(orders['status'].unique())
-#print(orders.columns)
+
 #print(orders['status'].unique())
 
 products = pd.read_sql("""SELECT * FROM products""",conn)
-print(products.columns)
+#print(products.columns)
 order_details = pd.read_sql("""SELECT * FROM orderdetails""",conn)
-print(order_details.columns)
+#print(order_details.columns)
+#print(orders.columns)
 
 customers = pd.read_sql("""SELECT * FROM customers""",conn)
 
@@ -110,11 +111,19 @@ GROUP BY p.productName
 ORDER BY totalunits DESC
 """,conn)
 
-print(df_product_sold)
 
 # STEP 8
 # Replace None with your code
-df_total_customers = None
+df_total_customers = pd.read_sql(""" 
+SELECT p.productName, p.productCode, COUNT(DISTINCT orders.customerNumber) AS numpurchasers
+FROM products AS p
+  JOIN orderdetails
+  USING(productCode)
+  JOIN orders
+  ON orderdetails.orderNumber = orders.orderNumber
+GROUP BY p.productName
+ORDER BY numpurchasers DESC
+""",conn)
 
 # STEP 9
 # Replace None with your code
