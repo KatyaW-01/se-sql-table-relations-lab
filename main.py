@@ -11,7 +11,7 @@ table = pd.read_sql("""SELECT * FROM sqlite_master""", conn)
 #print(table)
 
 employee_table = pd.read_sql("""SELECT * FROM employees""",conn)
-#print(employee_table)
+
 offices = pd.read_sql("""SELECT * FROM offices """,conn)
 #print(offices.info(verbose=True))
 
@@ -24,10 +24,16 @@ orders = pd.read_sql("""SELECT * FROM orders """,conn)
 products = pd.read_sql("""SELECT * FROM products""",conn)
 #print(products.columns)
 order_details = pd.read_sql("""SELECT * FROM orderdetails""",conn)
-#print(order_details.columns)
+
 #print(orders.columns)
 
 customers = pd.read_sql("""SELECT * FROM customers""",conn)
+# print(customers.columns)
+# print(employee_table.columns)
+# print(offices.columns)
+# print(orders.columns)
+# print(order_details.columns)
+# print(products.columns)
 
 #print(offices.columns)
 # STEP 1
@@ -140,6 +146,33 @@ GROUP BY o.officeCode
 
 # STEP 10
 # Replace None with your code
-df_under_20 = None
 
+df_under_20 = pd.read_sql(""" 
+SELECT DISTINCT 
+  e.employeeNumber, 
+  e.firstName, 
+  e.lastName, 
+  off.city, 
+  off.officeCode
+FROM employees AS e
+  JOIN offices AS off 
+  ON e.officeCode = off.officeCode
+  JOIN customers AS c 
+  ON e.employeeNumber = c.salesRepEmployeeNumber
+  JOIN orders AS o 
+  ON c.customerNumber = o.customerNumber 
+  JOIN orderdetails AS od 
+  ON o.orderNumber = od.orderNumber                        
+  WHERE od.productCode IN (
+      SELECT orderdetails.productCode
+      FROM orderdetails
+      JOIN orders ON orderdetails.orderNumber = orders.orderNumber
+      GROUP BY orderdetails.productCode
+      HAVING COUNT(DISTINCT orders.customerNumber) < 20
+  )
+ORDER BY e.lastName
+""",conn)
+
+
+print(df_under_20)
 conn.close()
